@@ -1,0 +1,14 @@
+# 系统配置
+system:
+  host: "0.0.0.0"
+  post: 5001
+  env: debug
+  # env: release
+
+# logger 日志
+logger:
+  level: info
+  prefix: '[go_admin_api]'
+  director: logger
+  show_line: true
+  log_in_console: true
