@@ -1,7 +1,12 @@
 package global
 
-import "github.com/sirupsen/logrus"
+import (
+	"context"
+
+	"github.com/sirupsen/logrus"
+)
 
 var (
 	Log *logrus.Logger
+	Ctx = context.Background()
 )
