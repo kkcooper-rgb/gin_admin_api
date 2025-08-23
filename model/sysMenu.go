@@ -32,3 +32,21 @@ type AddSysMenuDto struct {
 	MenuStatus uint   `json:"menuStatus"` // 启用状态：1->启用；2->禁用
 	Sort       uint   `json:"sort"`       // 排序
 }
+
+// UpdateSysMenuDto 修改菜单参数
+type UpdateSysMenuDto struct {
+	ID         uint   `json:"id"`         // ID
+	ParentId   uint   `json:"parentId"`   // 父菜单id
+	MenuName   string `json:"menuName"`   // 菜单名称
+	Icon       string `json:"icon"`       // 菜单图标
+	Value      string `json:"value"`      // 权限值
+	MenuType   uint   `json:"menuType"`   // 菜单类型：1->目录；2->菜单；3->按钮
+	Url        string `json:"url"`        // 菜单url
+	MenuStatus uint   `json:"menuStatus"` // 启用状态；1->启用；2->禁用
+	Sort       uint   `json:"sort"`       // 排序
+}
+
+// SysMenuIdDto id参数
+type SysMenuIdDto struct {
+	ID uint `json:"id"` // ID
+}

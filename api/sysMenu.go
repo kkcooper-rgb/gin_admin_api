@@ -5,6 +5,7 @@ import (
 	"go_admin_api/model"
 	"go_admin_api/result"
 	"go_admin_api/utils"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -79,8 +80,111 @@ func CreateSysMenu(c *gin.Context) {
 	result.Success(c, true)
 }
 
+// GetSysMenuList 查询菜单列表
+// @Summary 查询菜单列表
+// @Tags 菜单相关接口
+// @Produce json
+// @Description 查询菜单列表
+// @Param menuName query string false "菜单名称"
+// @Param menuStatus query string false "菜单状态"
+// @Success 200 {object} result.Result
+// @Router /api/sysMenu/list [post]
+func GetSysMenuList(c *gin.Context) {
+	MenuName := c.Query("menuName")
+	MenuStatus := c.Query("menuStatus")
+	var sysMenu []model.SysMenu
+	curDb := core.Db.Table("sys_menu").Order("sort")
+	if MenuName != "" {
+		curDb = curDb.Where("menu_name = ?", MenuName)
+	}
+	if MenuStatus != "" {
+		curDb = curDb.Where("menu_status = ?", MenuStatus)
+	}
+	curDb.Find(&sysMenu)
+	result.Success(c, sysMenu)
+}
+
+// GetSysMenu 根据id查询菜单
+// @Summary 根据id查询菜单
+// @Tags 菜单相关接口
+// @Produce json
+// @Description 根据id查询菜单
+// @Param id query int true "菜单id"
+// @Success 200 {object} result.Result
+// @Router /api/sysMenu/info [get]
+func GetSysMenu(c *gin.Context) {
+	Id, _ := strconv.Atoi(c.Query("id"))
+	var sysMenu model.SysMenu
+	core.Db.First(&sysMenu, Id)
+	result.Success(c, sysMenu)
+}
+
+// UpdateSysMenu 修改菜单
+// @Summary 修改菜单
+// @Tags 菜单相关接口
+// @Produce json
+// @Description 修改菜单
+// @Param data body model.UpdateSysMenuDto true "data"
+// @Success 200 {object} result.Result
+// @Router /api/sysMenu/update [put]
+func UpdateSysMenu(c *gin.Context) {
+	var dto model.UpdateSysMenuDto
+	_ = c.BindJSON(&dto)
+	var sysMenu model.SysMenu
+	core.Db.First(&sysMenu, dto.ID)
+	sysMenu.ParentId = dto.ParentId
+	sysMenu.MenuName = dto.MenuName
+	sysMenu.Icon = dto.Icon
+	sysMenu.Value = dto.Value
+	sysMenu.MenuType = dto.MenuType
+	sysMenu.Url = dto.Url
+	sysMenu.MenuStatus = dto.MenuStatus
+	sysMenu.Sort = dto.Sort
+	core.Db.Save(&sysMenu)
+	result.Success(c, true)
+}
+
+// DeleteSysMenu 根据id删除菜单
+// @Summary 根据id删除菜单
+// @Tags 菜单相关接口
+// @Produce json
+// @Description 根据id删除菜单
+// @Param data body model.SysMenuIdDto true "data"
+// @Success 200 {object} result.Result
+// @Router /api/sysMenu/delete [delete]
+func DeleteSysMenu(c *gin.Context) {
+	var dto model.SysMenuIdDto
+	_ = c.BindJSON(&dto)
+	// 菜单已分配不能删除
+	sysRoleMenu := GetSysRoleMenu(dto.ID)
+	if sysRoleMenu.MenuId > 0 {
+		result.Failed(c, int(result.ApiCode.DelSysMenuFailed), result.ApiCode.GetMessage(result.ApiCode.DelSysMenuFailed))
+		return
+	}
+	// 存在子菜单不能删除
+	sysMenu := GetChildSysMenu(dto.ID)
+	if sysMenu.ID > 0 {
+		result.Failed(c, int(result.ApiCode.NorDeleteMenu), result.ApiCode.GetMessage(result.ApiCode.NorDeleteMenu))
+		return
+	}
+	core.Db.Delete(&model.SysMenu{}, dto.ID)
+	result.Success(c, true)
+}
+
 // GetSysMenuByName 根据菜单名称查询菜单是否存在
 func GetSysMenuByName(menuName string) (sysMenu model.SysMenu) {
 	core.Db.Where("menu_name = ?", menuName).First(&sysMenu)
+	return sysMenu
+}
+
+// GetSysRoleMenu 查询是否分配菜单
+func GetSysRoleMenu(id uint) (sysRoleMenu model.SysRoleMenu) {
+	core.Db.Where("menu_id = ?", id).First(&sysRoleMenu)
+	return sysRoleMenu
+}
+
+// GetChildSysMenu 查询是否存在子菜单
+func GetChildSysMenu(id uint) (sysMenu model.SysMenu) {
+	core.Db.Where("parent_id = ?", id).First(&sysMenu)
 	return sysMenu
 }

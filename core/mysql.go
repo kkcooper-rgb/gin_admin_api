@@ -49,3 +49,7 @@ func MysqlInit() error {
 	global.Log.Infof("mysql连接成功")
 	return nil
 }
+
+func GetFb() *gorm.DB {
+	return Db
+}
