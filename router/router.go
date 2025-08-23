@@ -21,5 +21,6 @@ func InitRouter() *gin.Engine {
 // 路由接口
 func register(router *gin.Engine) {
 	router.GET("/api/success", api.Success)
-	// router.GET("/api/failed", api.Failed)
+	router.GET("/api/failed", api.Failed)
+	router.POST("/api/sysMenu/add", api.CreateSysMenu)
 }

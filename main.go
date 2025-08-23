@@ -18,5 +18,13 @@ func main() {
 	core.MysqlInit()
 	// 初始化redis
 	core.RedisInit()
-	router.InitRouter()
+	// router.InitRouter()
+	// 初始化路由
+	r := router.InitRouter()
+
+	// 启动 Gin 服务，可指定监听地址和端口，如 r.Run(":8080")，不指定默认监听 8080 端口
+	if err := r.Run(); err != nil {
+		// global.Log.Error("服务启动失败: %v", err)
+		// 也可以选择退出程序，比如 os.Exit(1)
+	}
 }
