@@ -18,10 +18,25 @@ func (SysRole) TableName() string {
 	return "sys_role"
 }
 
+// AddSysRoleDto 新增角色参数
 type AddSysRoleDto struct {
 	RoleName    string      `json:"roleName"`    // 角色名称
 	RoleKey     string      `json:"roleKey"`     // 权限字符串
 	Status      int         `json:"status"`      // 帐号启用状态: 1->启用,2->禁用
 	Description string      `json:"description"` // 描述
 	CreateTime  utils.HTime `json:"createTime"`  // 创建时间
+}
+
+// UpdateSysRoleDto 修改角色参数
+type UpdateSysRoleDto struct {
+	ID          uint   `json:"id"`          // ID
+	RoleName    string `json:"roleName"`    // 角色名称
+	RoleKey     string `json:"roleKey"`     // 权限字符串
+	Status      int    `json:"status"`      // 帐号启用状态: 1->启用,2->禁用
+	Description string `json:"description"` // 描述
+}
+
+// SysRoleIdDto Id参数
+type SysRoleIdDto struct {
+	ID uint `json:"id"` // ID
 }
