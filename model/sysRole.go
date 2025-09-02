@@ -40,3 +40,26 @@ type UpdateSysRoleDto struct {
 type SysRoleIdDto struct {
 	ID uint `json:"id"` // ID
 }
+
+// UpdateSysRoleStatusDto 设置状态参数
+type UpdateSysRoleStatusDto struct {
+	ID     uint `json:"id"`     // ID
+	Status int  `json:"status"` // 帐号启用状态：1->启用,2->禁用
+}
+
+// SysRoleVo 角色下拉列表
+type SysRoleVo struct {
+	ID       uint   `json:"id"`       // ID
+	RoleName string `json:"roleName"` // 角色名称
+}
+
+// IdVo 当前角色的菜单权限id
+type IdVo struct {
+	ID int `json:"id"` // ID
+}
+
+// RoleMenuDto 角色id和菜单id列表参数对象
+type RoleMenuDto struct {
+	ID      uint   `json:"id" binding:"required"`       // 角色ID
+	MenuIds []uint `json:"menu_ids" binding:"required"` // 菜单id列表
+}

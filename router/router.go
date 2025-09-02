@@ -34,4 +34,9 @@ func register(router *gin.Engine) {
 	router.GET("/api/sysRole/info", api.GetSysRole)
 	router.PUT("/api/sysRole/update", api.UpdateSysRole)
 	router.DELETE("/api/sysRole/delete", api.DeleteSysRole)
+	router.PUT("/api/sysRole/updateStatus", api.UpdateSysRoleStatus)
+	router.GET("/api/sysRole/vo/list", api.GetSysRoleVoList)
+	router.GET("/api/sysRole/vo/idList", api.QueryRoleMenuIdList)
+
+	router.PUT("/api/sysRole/assignPermissions", api.AssignPermissions)
 }

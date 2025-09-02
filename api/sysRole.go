@@ -150,6 +150,85 @@ func DeleteSysRole(c *gin.Context) {
 	result.Success(c, true)
 }
 
+// UpdateSysRoleStatus 设置角色状态
+// @Summary 设置角色状态
+// @Tags 角色相关接口
+// @Produce json
+// @Description 设置角色状态
+// @Param data body model.UpdateSysRoleStatusDto true "data"
+// @Success 200 {object} result.Result
+// @router /api/sysRole/updateStatus [put]
+func UpdateSysRoleStatus(c *gin.Context) {
+	var dto model.UpdateSysRoleStatusDto
+	_ = c.BindJSON(&dto)
+	var sysRole model.SysRole
+	core.Db.First(&sysRole, dto.ID)
+	sysRole.Status = dto.Status
+	core.Db.Save(&sysRole)
+	result.Success(c, true)
+}
+
+// GetSysRoleVoList 查询角色下拉列表
+// @Summary 查询角色下拉列表
+// @Tags 角色相关接口
+// @Produce json
+// @Description 查询角色下拉列表
+// @Success 200 {object} result.Result
+// @router /api/sysRole/vo/list [get]
+func GetSysRoleVoList(c *gin.Context) {
+	var sysRoleVo []model.SysRoleVo
+	core.Db.Table("sys_role").Select("id, role_name").Scan(&sysRoleVo)
+	result.Success(c, sysRoleVo)
+}
+
+// QueryRoleMenuIdList 根据角色的id查询菜单数据
+// @Summary 根据角色的id查询菜单数据
+// @Tags 角色相关接口
+// @Produce json
+// @Description 根据角色的id查询菜单数据
+// @Param id query int true "id"
+// @Success 200 {object} result.Result
+// @router /api/sysRole/vo/idList [get]
+func QueryRoleMenuIdList(c *gin.Context) {
+	Id, _ := strconv.Atoi(c.Query("id"))
+	var idVo []model.IdVo
+	const menuType = 3
+	core.Db.Table("sys_menu sm").
+		Select("sm.id").Joins("LEFT JOIN sys_role_menu srm ON srm.menu_id = sm.id").
+		Joins("LEFT JOIN sys_role sr ON sr.id = srm.role_id").
+		Where("sm.menu_type = ?", menuType).
+		Where("sr.id = ?", Id).
+		Scan(&idVo)
+	var idList = make([]int, 0, 10)
+	for _, id := range idVo {
+		idList = append(idList, id.ID)
+	}
+	result.Success(c, idList)
+}
+
+// AssignPermissions 分配权限
+// @Summary 分配权限
+// @Tags 角色相关接口
+// @Produce json
+// @Description 分配权限
+// @Param data body model.RoleMenuDto true "data"
+// @Success 200 {object} result.Result
+// @router /api/sysRole/assignPermissions [put]
+func AssignPermissions(c *gin.Context) {
+	var roleMenu model.RoleMenuDto
+	_ = c.BindJSON(&roleMenu)
+	core.Db.Table("sys_role_menu").
+		Where("role_id = ?", roleMenu.ID).
+		Delete(&model.SysRoleMenu{})
+	for _, value := range roleMenu.MenuIds {
+		var sysRoleMenu model.SysRoleMenu
+		sysRoleMenu.RoleId = roleMenu.ID
+		sysRoleMenu.MenuId = value
+		core.Db.Create(&sysRoleMenu)
+	}
+	result.Success(c, true)
+}
+
 // GetSysRoleByName 根据角色名称查询角色
 func GetSysRoleByName(roleName string) (sysRole model.SysRole) {
 	core.Db.Where("role_name = ?", roleName).First(&sysRole)
