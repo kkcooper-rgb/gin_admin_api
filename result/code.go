@@ -12,6 +12,9 @@ type Codes struct {
 	DelSysRoleFailed      uint
 	MissParameter         uint
 	UsernameAlreadyExists uint
+	StatusDisabled        uint
+	SysAdminIsNotExists   uint
+	PasswordNotTrue       uint
 }
 
 // 状态码
@@ -25,6 +28,9 @@ var ApiCode = &Codes{
 	DelSysRoleFailed:      604,
 	MissParameter:         605,
 	UsernameAlreadyExists: 606,
+	StatusDisabled:        607,
+	SysAdminIsNotExists:   608,
+	PasswordNotTrue:       609,
 }
 
 // 状态信息初始化
@@ -39,6 +45,9 @@ func init() {
 		ApiCode.DelSysRoleFailed:      "角色已分配不能删除",
 		ApiCode.MissParameter:         "缺少必要参数",
 		ApiCode.UsernameAlreadyExists: "用户名称已存在，请重新输入！",
+		ApiCode.StatusDisabled:        "您的账号已被禁用，请联系管理员",
+		ApiCode.SysAdminIsNotExists:   "用户不存在",
+		ApiCode.PasswordNotTrue:       "密码不正确",
 	}
 }
 

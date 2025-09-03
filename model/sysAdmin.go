@@ -91,3 +91,22 @@ type SysAdminVo struct {
 	RoleName   string      `json:"roleName"`   // 角色名
 	CreateTime utils.HTime `json:"createTime"` // 创建时间
 }
+
+// JwtAdmin 鉴权用户结构体
+type JwtAdmin struct {
+	ID         uint   `json:"id"`         // ID
+	Username   string `json:"username"`   // 用户账号
+	Nickname   string `json:"nickname"`   // 昵称
+	Status     int    `json:"status"`     // 帐号启用状态：1->启用,2->禁用
+	Icon       string `json:"icon"`       // 头像
+	Email      string `json:"email"`      // 邮箱
+	Phone      string `json:"phone"`      // 电话
+	Note       string `json:"note"`       // 备注
+	ExpireTime int64  `json:"expireTime"` // 过期时间
+}
+
+// LoginDto 登录参数对象
+type LoginDto struct {
+	Username string `json:"username" validate:"required"` // 用户账号
+	Password string `json:"password" validate:"required"` // 用户密码
+}

@@ -46,4 +46,6 @@ func register(router *gin.Engine) {
 	router.PUT("/api/sysAdmin/updateStatus", api.UpdateSysAdminStatus)
 	router.PUT("/api/sysAdmin/updatePassword", api.ResetSysAdminPassword)
 	router.GET("/api/sysAdmin/list", api.GetSysAdminList)
+
+	router.POST("/api/sysAdmin/login", api.Login)
 }

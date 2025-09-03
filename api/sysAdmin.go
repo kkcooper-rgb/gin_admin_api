@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+	"go_admin_api/constant"
 	"go_admin_api/core"
 	"go_admin_api/model"
 	"go_admin_api/result"
@@ -218,6 +220,49 @@ func GetSysAdminList(c *gin.Context) {
 	}
 	curDb.Count(&count).Limit(PageSize).Offset((PageNum - 1) * PageSize).Order("sys_admin.create_time DESC").Find(&sysAdminVo)
 	result.Success(c, map[string]interface{}{"total": count, "pageSize": PageSize, "pageNum": PageNum, "list": sysAdminVo})
+}
+
+// Login 登录
+// @Summary 登录
+// @Tags 用户相关接口
+// @Produce json
+// @Description 登录
+// @Param data body model.LoginDto true "data"
+// @Success 200 {object} result.Result
+// @router /api/sysAdmin/login [post]
+func Login(c *gin.Context) {
+	// 绑定json参数并校验参数
+	var dto model.LoginDto
+	_ = c.BindJSON(&dto)
+	err := validator.New().Struct(dto)
+	fmt.Println(err, "=====>", dto)
+	if err != nil {
+		result.Failed(c, int(result.ApiCode.MissParameter), result.ApiCode.GetMessage(result.ApiCode.MissParameter))
+		return
+	}
+	// 查询用户信息
+	sysAdmin := GetSysAdminByUsername(dto.Username)
+	if sysAdmin.Status == constant.StatusDisabled {
+		result.Failed(c, int(result.ApiCode.StatusDisabled), result.ApiCode.GetMessage(result.ApiCode.StatusDisabled))
+		return
+	}
+	if sysAdmin.ID > 0 {
+		// 校验密码是否正确
+		if sysAdmin.Password != utils.EncryptionMd5(dto.Password) {
+			result.Failed(c, int(result.ApiCode.PasswordNotTrue), result.ApiCode.GetMessage(result.ApiCode.PasswordNotTrue))
+			return
+		}
+		// 生成token
+		token, _ := core.GenerateTokenByAdmin(sysAdmin)
+		// global.Log.Info("用户token: %s", token)
+		// 组装用户信息 todo
+		// 左侧菜单数据 todo
+		// 权限列表 todo
+		result.Success(c, map[string]any{"token": token})
+	} else {
+		result.Failed(c, int(result.ApiCode.SysAdminIsNotExists), result.ApiCode.GetMessage(result.ApiCode.SysAdminIsNotExists))
+		return
+	}
 }
 
 // GetSysAdminByUsername 根据用户名称查询用户

@@ -14,6 +14,7 @@ type config struct {
 	Logger logger `yaml:"logger"`
 	Mysql  mysql  `yaml:"mysql"`
 	Redis  redis  `yaml:"redis"`
+	Token  token  `yaml:"token"`
 }
 
 // 系统配置
@@ -49,6 +50,14 @@ type mysql struct {
 type redis struct {
 	Address string `yaml:"address"`
 	Db      int    `yaml:"db"`
+}
+
+// token配置
+type token struct {
+	Headers    string `yaml:"headers"`
+	ExpireTime int    `yaml:"expireTime"`
+	Secret     string `yaml:"secret"`
+	Issuer     string `yaml:"issuer"`
 }
 
 var Config *config
